@@ -1,10 +1,10 @@
 package com.messbook.messbook.Entities;
 
 public class Mess {
+    private String id;
     private String name;
     private String hostel_name;
     private String phone_number;
-    private String cmail_id;
     private String password;
     private int due;
     private String mess_image_url;
@@ -12,14 +12,23 @@ public class Mess {
     public Mess() {
     }
 
-    public Mess(String name, String hostel_name, String phone_number, String cmail_id, String password, int due, String mess_image_url) {
+
+    public Mess(String id, String name, String hostel_name, String phone_number, String password, int due, String mess_image_url) {
+        this.id = id;
         this.name = name;
         this.hostel_name = hostel_name;
         this.phone_number = phone_number;
-        this.cmail_id = cmail_id;
         this.password = password;
         this.due = due;
         this.mess_image_url = mess_image_url;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -44,14 +53,6 @@ public class Mess {
 
     public void setPhone_number(String phone_number) {
         this.phone_number = phone_number;
-    }
-
-    public String getCmail_id() {
-        return cmail_id;
-    }
-
-    public void setCmail_id(String cmail_id) {
-        this.cmail_id = cmail_id;
     }
 
     public String getPassword() {

@@ -48,7 +48,7 @@ public class MailDao {
 
     // creating the mail
     public boolean createMail(Mail mail) {
-        String query = "INSERT INTO mail values ()";
+        String query = "INSERT INTO mail values (?, ?, ?, ?, ?, ?, ?)";
         boolean verdict =false;
 
         try {

@@ -5,18 +5,17 @@ public class Student {
     private String phone_number;
     private String department;
     private String password;
-    private String cmail_id;
     private String gender;
     private int remaider;
     private String student_image_url;
 
     public Student() {}
-    public Student(String name, String phone_number, String department, String password, String cmail_id, String gender, int remaider, String student_image_url) {
+
+    public Student(String name, String phone_number, String department, String password, String gender, int remaider, String student_image_url) {
         this.name = name;
         this.phone_number = phone_number;
         this.department = department;
         this.password = password;
-        this.cmail_id = cmail_id;
         this.gender = gender;
         this.remaider = remaider;
         this.student_image_url = student_image_url;
@@ -52,14 +51,6 @@ public class Student {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getCmail_id() {
-        return cmail_id;
-    }
-
-    public void setCmail_id(String cmail_id) {
-        this.cmail_id = cmail_id;
     }
 
     public String getGender() {
