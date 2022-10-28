@@ -23,8 +23,8 @@ public class MailDao {
     * */
 
     // getting mail with batch -- which are received
-    public List<Mail> getAllReceivedMailOf(String receiver_cmail, String semester_id, int batchNumber ) {
-        String query = "SELECT * FROM mail WHERE receiver_cmail = ? AND semester_id = ? LIMIT ? , 50";
+    public List<Mail> getAllReceivedMailOf(String receiver_cmail, String semester_id, int batchNumber) {
+        String query = "SELECT * FROM mail WHERE receiver_cmail = ? AND semester_id = ? ORDER BY sending_date LIMIT ? , 50";
         List<Mail> listOfMail = null;
         try {
             listOfMail =  jdbcTemplate.query(query, new BeanPropertyRowMapper<Mail>(Mail.class),receiver_cmail, semester_id, (batchNumber - 1) * 50);
@@ -36,7 +36,7 @@ public class MailDao {
 
     // getting mail with batch -- which are received
     public List<Mail> getAllSentMailOf(String sender_cmail, String semester_id, int batchNumber ) {
-        String query = "SELECT * FROM mail WHERE receiver_cmail = ? AND semester_id = ? LIMIT ? , 50";
+        String query = "SELECT * FROM mail WHERE receiver_cmail = ? AND semester_id = ? ORDER BY sending_date LIMIT ? , 50";
         List<Mail> listOfMail = null;
         try {
             listOfMail =  jdbcTemplate.query(query, new BeanPropertyRowMapper<Mail>(Mail.class),sender_cmail, semester_id, (batchNumber - 1) * 50);
