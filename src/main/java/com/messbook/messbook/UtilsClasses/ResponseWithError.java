@@ -6,7 +6,7 @@ import java.util.List;
 
 public class ResponseWithError<T, X> {
     private T response;
-    private ErrorData<String> error;
+    private ErrorData<String> error = new ErrorData<String>();
 
     public ResponseWithError() {}
 

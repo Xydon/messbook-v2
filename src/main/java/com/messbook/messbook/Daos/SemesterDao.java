@@ -1,5 +1,6 @@
 package com.messbook.messbook.Daos;
 
+import com.messbook.messbook.Entities.Extra_Item_Menu;
 import com.messbook.messbook.Entities.Semester_Details;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -11,6 +12,7 @@ public class SemesterDao {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    // getting the latest semester details
     public Semester_Details getLatestSemester() {
         String query = "SELECT * FROM Semester_Details ORDER BY start_date;";
         Semester_Details latestSemester = null;
@@ -23,4 +25,5 @@ public class SemesterDao {
 
         return latestSemester;
     }
+
 }

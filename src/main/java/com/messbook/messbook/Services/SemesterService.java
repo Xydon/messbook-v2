@@ -33,4 +33,6 @@ public class SemesterService {
         response.setResponse(details);
         return response;
     }
+
+
 }
