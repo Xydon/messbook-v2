@@ -1,6 +1,6 @@
 package com.messbook.messbook.Enums;
 
-public enum SemesterErrors {
-    FAILED,
-    SUCCESS,
+public class SemesterErrors extends Errors {
+    public static String FAILED = "FAILED";
+    public static String SUCCESS = "SUCCESS";
 }

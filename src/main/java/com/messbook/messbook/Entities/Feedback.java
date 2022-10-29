@@ -1,15 +1,18 @@
 package com.messbook.messbook.Entities;
 
+import java.sql.Date;
+
 public class Feedback {
     private String semester_id;
     private String mess_id;
-    private String month_of_comment;
+    private Date month_of_comment;
     private String text;
 
     public Feedback() {
     }
 
-    public Feedback(String semester_id, String mess_id, String month_of_comment, String text) {
+
+    public Feedback(String semester_id, String mess_id, Date month_of_comment, String text) {
         this.semester_id = semester_id;
         this.mess_id = mess_id;
         this.month_of_comment = month_of_comment;
@@ -32,11 +35,11 @@ public class Feedback {
         this.mess_id = mess_id;
     }
 
-    public String getMonth_of_comment() {
+    public Date getMonth_of_comment() {
         return month_of_comment;
     }
 
-    public void setMonth_of_comment(String month_of_comment) {
+    public void setMonth_of_comment(Date month_of_comment) {
         this.month_of_comment = month_of_comment;
     }
 

@@ -6,16 +6,14 @@ import com.messbook.messbook.Enums.MailErrors;
 import com.messbook.messbook.Enums.SemesterErrors;
 import com.messbook.messbook.Services.MailService;
 import com.messbook.messbook.Services.SemesterService;
-import com.messbook.messbook.UtilsClasses.ErrorData;
 import com.messbook.messbook.UtilsClasses.ResponseWithError;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @RestController
+@CrossOrigin
 public class MailController {
     @Autowired
     MailService mailService;
