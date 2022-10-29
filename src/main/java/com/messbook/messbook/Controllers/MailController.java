@@ -70,5 +70,8 @@ public class MailController {
     }
 
     //* setting the view on the mail
-
+    @PostMapping("api/mails/setViewed")
+    public ResponseWithError<Boolean, MailErrors> setViewedOn(@RequestParam(value = "mailId") String mailId) {
+        return mailService.setWatchedForMail(mailId);
+    }
 }
