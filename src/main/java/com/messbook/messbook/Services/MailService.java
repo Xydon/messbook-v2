@@ -73,16 +73,49 @@ public class MailService {
     }
 
     // * getting the mail
-    public List<Mail> getAllReceivedMailOf(String receiver_cmail, String semester_id, int batchNumber ) {
-        return mailDao.getAllReceivedMailOf(receiver_cmail, semester_id, batchNumber);
+    public ResponseWithError<List<Mail>,MailErrors> getAllReceivedMailOf(String receiver_cmail, String semester_id, int batchNumber) {
+        List<Mail> listOfMails =  mailDao.getAllReceivedMailOf(receiver_cmail, semester_id, batchNumber);
+        ResponseWithError<List<Mail>,MailErrors> response = new ResponseWithError<List<Mail>,MailErrors>();
+
+        if(listOfMails == null) {
+            response.configError(MailErrors.FAILED, "failed to get the mails");
+            response.setResponse(null);
+            return response;
+        }
+
+        response.setResponse(listOfMails);
+        response.configError(MailErrors.SUCCESS);
+        return response;
     }
 
-    public List<Mail> getAllSentMailOf(String sender_cmail, String semester_id, int batchNumber ) {
-        return mailDao.getAllSentMailOf(sender_cmail, semester_id, batchNumber);
+    public ResponseWithError<List<Mail>,MailErrors> getAllSentMailOf(String sender_cmail, String semester_id, int batchNumber ) {
+        List<Mail> listOfMails =  mailDao.getAllSentMailOf(sender_cmail, semester_id, batchNumber);
+        ResponseWithError<List<Mail>,MailErrors> response = new ResponseWithError<List<Mail>,MailErrors>();
+
+        if(listOfMails == null) {
+            response.configError(MailErrors.FAILED, "failed to get the mails");
+            response.setResponse(null);
+            return response;
+        }
+
+        response.setResponse(listOfMails);
+        response.configError(MailErrors.SUCCESS);
+        return response;
     }
 
     // * setting view for mail
-    public boolean setWatchedForMail(String mailId) {
-        return mailDao.setWatchedForMail(mailId);
+    public ResponseWithError<Boolean, MailErrors> setWatchedForMail(String mailId) {
+        ResponseWithError<Boolean, MailErrors> response = new ResponseWithError<Boolean, MailErrors>();
+        boolean setWatchedVerdict = mailDao.setWatchedForMail(mailId);
+
+        if(!setWatchedVerdict) {
+            response.setResponse(Boolean.FALSE);
+            response.configError(MailErrors.FAILED);
+            return response;
+        }
+
+        response.setResponse(Boolean.TRUE);
+        response.configError(MailErrors.SUCCESS);
+        return response;
     }
 }

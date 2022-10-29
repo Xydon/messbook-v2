@@ -15,6 +15,13 @@ public class ResponseWithError<T, X> {
         this.response = response;
     }
 
+    public T getResponse(){
+        return this.response;
+    }
+
+    public ErrorData<X> getError() {
+        return this.error;
+    }
 
     public void configError(X errorCode, String ...messages) {
         this.error.setErrorCode(errorCode);

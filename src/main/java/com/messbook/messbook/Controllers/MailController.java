@@ -1,7 +1,9 @@
 package com.messbook.messbook.Controllers;
 
 import com.messbook.messbook.Entities.Mail;
+import com.messbook.messbook.Entities.Semester_Details;
 import com.messbook.messbook.Enums.MailErrors;
+import com.messbook.messbook.Enums.SemesterErrors;
 import com.messbook.messbook.Services.MailService;
 import com.messbook.messbook.Services.SemesterService;
 import com.messbook.messbook.UtilsClasses.ErrorData;
@@ -22,29 +24,43 @@ public class MailController {
     SemesterService semesterService;
     /*
      * TODO
-     *  1. create api for creating mail --
+     *  1. create api for creating mail -- done
      *  2. create api for fetching mail {sent and received} -- done
      *  3. create api for setting viewed mail --
      * */
 
     //* getting the mails -- received
     @GetMapping("api/mails/received")
-    public List<Mail> getReceivedMailOf(@RequestParam(value = "cmail_id") String cmail_id, @RequestParam(value = "batchNumber") int batchNumber) {
-        String latestSemesterId = semesterService.getLatestSemester().getId();
-        List<Mail> listOfMails = mailService.getAllReceivedMailOf(cmail_id, latestSemesterId, batchNumber);
-        if (listOfMails == null) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        } else return listOfMails;
+    public ResponseWithError<List<Mail>,MailErrors> getReceivedMailOf(@RequestParam(value = "cmail_id") String cmail_id, @RequestParam(value = "batchNumber") int batchNumber) {
+        ResponseWithError<List<Mail>, MailErrors> response = new ResponseWithError<List<Mail>, MailErrors>();
+        ResponseWithError<Semester_Details, SemesterErrors> latestSemesterResponse = semesterService.getLatestSemester();
+        if(latestSemesterResponse.getError().getErrorCode() == SemesterErrors.FAILED) {
+            response.configError(MailErrors.FAILED, "failed to get the latest semester");
+            response.setResponse(null);
+            return response;
+        }
+
+        String latestSemesterId = latestSemesterResponse.getResponse().getId();
+        response =  mailService.getAllReceivedMailOf(cmail_id, latestSemesterId, batchNumber);
+
+        return response;
     }
 
     //* getting the mails -- sent
     @GetMapping("api/mails/sent")
-    public List<Mail> getSentMailOf(@RequestParam(value = "cmail_id") String cmail_id, @RequestParam(value = "batchNumber") int batchNumber) {
-        String latestSemesterId = semesterService.getLatestSemester().getId();
-        List<Mail> listOfMails = mailService.getAllReceivedMailOf(cmail_id, latestSemesterId, batchNumber);
-        if (listOfMails == null) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        } else return listOfMails;
+    public ResponseWithError<List<Mail>, MailErrors> getSentMailOf(@RequestParam(value = "cmail_id") String cmail_id, @RequestParam(value = "batchNumber") int batchNumber) {
+        ResponseWithError<List<Mail>, MailErrors> response = new ResponseWithError<List<Mail>, MailErrors>();
+        ResponseWithError<Semester_Details, SemesterErrors> latestSemesterResponse = semesterService.getLatestSemester();
+        if(latestSemesterResponse.getError().getErrorCode() == SemesterErrors.FAILED) {
+            response.configError(MailErrors.FAILED, "failed to get the latest semester");
+            response.setResponse(null);
+            return response;
+        }
+
+        String latestSemesterId = latestSemesterResponse.getResponse().getId();
+        response =  mailService.getAllSentMailOf(cmail_id, latestSemesterId, batchNumber);
+
+        return response;
     }
 
     //* creating mails
@@ -52,5 +68,7 @@ public class MailController {
     public ResponseWithError<Boolean, MailErrors> createMail(@RequestBody Mail mail) {
         return mailService.createMail(mail);
     }
+
+    //* setting the view on the mail
 
 }
