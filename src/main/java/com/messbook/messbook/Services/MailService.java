@@ -3,6 +3,9 @@ package com.messbook.messbook.Services;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.messbook.messbook.Daos.MailDao;
 import com.messbook.messbook.Entities.Mail;
+import com.messbook.messbook.Enums.MailErrors;
+import com.messbook.messbook.UtilsClasses.ErrorData;
+import com.messbook.messbook.UtilsClasses.ResponseWithError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +28,8 @@ public class MailService {
      * */
 
     //* creating the mail
-    public boolean createMail(Mail mail) {
+    public ResponseWithError<Boolean, MailErrors> createMail(Mail mail) {
+        ResponseWithError<Boolean, MailErrors> response = new ResponseWithError<Boolean, MailErrors>();
 
         // assign id
         mail.setId(NanoIdUtils.randomNanoId());
@@ -35,6 +39,15 @@ public class MailService {
 
         // assigning reading status
         mail.setHasRead(false);
+
+        // checking if the mail ids exists;
+        boolean cmailExistsVerdict = mailDao.doesCMailExists(mail.getSender_cmail());
+
+        if(!cmailExistsVerdict) {
+            response.configError(MailErrors.SENDER_CMAIL_DOES_NOT_EXISTS, "no cmail found for receiver");
+            response.setResponse(Boolean.FALSE);
+            return response;
+        }
 
         // assigning date
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/mm/dd");
@@ -46,7 +59,17 @@ public class MailService {
         mail.setSending_date(new Date(date, month, year));
 
         // saving it in the database
-        return mailDao.createMail(mail);
+        boolean savingVerdict = mailDao.createMail(mail);
+
+        if(!savingVerdict) {
+            response.configError(MailErrors.FAILED);
+            response.setResponse(Boolean.FALSE);
+            return response;
+        }
+
+        response.configError(MailErrors.SUCCESS);
+        response.setResponse(Boolean.TRUE);
+        return response;
     }
 
     // * getting the mail

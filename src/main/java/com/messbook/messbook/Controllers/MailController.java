@@ -1,8 +1,11 @@
 package com.messbook.messbook.Controllers;
 
 import com.messbook.messbook.Entities.Mail;
+import com.messbook.messbook.Enums.MailErrors;
 import com.messbook.messbook.Services.MailService;
 import com.messbook.messbook.Services.SemesterService;
+import com.messbook.messbook.UtilsClasses.ErrorData;
+import com.messbook.messbook.UtilsClasses.ResponseWithError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -46,8 +49,8 @@ public class MailController {
 
     //* creating mails
     @PostMapping("api/mails/create")
-    public void createMail(@RequestBody Mail mail) {
-
+    public ResponseWithError<Boolean, MailErrors> createMail(@RequestBody Mail mail) {
+        return mailService.createMail(mail);
     }
 
 }
