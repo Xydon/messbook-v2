@@ -9,6 +9,9 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.util.List;
+
 @Service
 public class SemesterService {
 
@@ -34,5 +37,27 @@ public class SemesterService {
         return response;
     }
 
+    public ResponseWithError<List<Date>, SemesterErrors> getMonthListOfMonthsInCurrentSemester() {
+        ResponseWithError<List<Date>, SemesterErrors> response = new ResponseWithError<List<Date>, SemesterErrors>();
+        List<Date> listOfMonth = semesterDao.getMonthListOfMonthsInCurrentSemester();
+        response.setResponse(listOfMonth);
 
+        if(listOfMonth == null) {
+            response.configAsFailed("cannot get the list of months");
+        }
+
+        return response;
+    }
+
+    public ResponseWithError<List<Date>, SemesterErrors> listOfMonthInCurrentSemesterNow() {
+        ResponseWithError<List<Date>, SemesterErrors> response = new ResponseWithError<List<Date>, SemesterErrors>();
+        List<Date> listOfMonth = semesterDao.listOfMonthInCurrentSemesterNow();
+        response.setResponse(listOfMonth);
+
+        if(listOfMonth == null) {
+            response.configAsFailed("cannot get the list of months");
+        }
+
+        return response;
+    }
 }

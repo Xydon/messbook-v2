@@ -3,6 +3,7 @@ package com.messbook.messbook.Entities;
 import java.sql.Date;
 
 public class Feedback {
+    private String student_roll_number;
     private String semester_id;
     private String mess_id;
     private Date month_of_comment;
@@ -12,11 +13,12 @@ public class Feedback {
     }
 
 
-    public Feedback(String semester_id, String mess_id, Date month_of_comment, String text) {
-        this.semester_id = semester_id;
-        this.mess_id = mess_id;
-        this.month_of_comment = month_of_comment;
-        this.text = text;
+    public String getStudent_roll_number() {
+        return student_roll_number;
+    }
+
+    public void setStudent_roll_number(String student_roll_number) {
+        this.student_roll_number = student_roll_number;
     }
 
     public String getSemester_id() {
@@ -48,6 +50,14 @@ public class Feedback {
     }
 
     public void setText(String text) {
+        this.text = text;
+    }
+
+    public Feedback(String student_roll_number, String semester_id, String mess_id, Date month_of_comment, String text) {
+        this.student_roll_number = student_roll_number;
+        this.semester_id = semester_id;
+        this.mess_id = mess_id;
+        this.month_of_comment = month_of_comment;
         this.text = text;
     }
 }

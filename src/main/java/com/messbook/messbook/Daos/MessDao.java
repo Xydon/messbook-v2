@@ -4,7 +4,6 @@ import com.messbook.messbook.Entities.*;
 import com.messbook.messbook.Enums.MessErrors;
 import com.messbook.messbook.ResponseStructures.ExtraItemWithCost;
 import com.messbook.messbook.ResponseStructures.MessPresent;
-import com.messbook.messbook.UtilsClasses.DateUtils;
 import com.messbook.messbook.UtilsClasses.ResponseWithError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -27,7 +26,9 @@ public class MessDao {
     *    3. function to get all the feedback for the mess for a specific month in the current semester -- done
     *    4. function to get all the entries for the month -- done
     *    5. function to get all the extra entries for a particular date -- done
-    *    6. function to mark absent for a range
+    *    6. function to mark absent for a range -- done
+    *    7. function to create a feedback
+    *    8. function to get all the feedback by student for a specific month
     * */
 
     public ResponseWithError<Mess, MessErrors> getDetailsOfMess(String id){
@@ -129,5 +130,36 @@ public class MessDao {
         if(count != 0) {
             return Boolean.TRUE;
         } else return Boolean.FALSE;
+    }
+
+    // function to create a feedback
+    public Boolean createFeedback(Feedback feedback) {
+        String query= "INSERT INTO feedback VALUES (?, ?, ?, ?, ?)";
+
+        int count = 0;
+
+        try {
+            count = jdbcTemplate.update(query, feedback.getStudent_roll_number(), feedback.getSemester_id(), feedback.getMess_id(), feedback.getText(), feedback.getMonth_of_comment());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        if(count == 0) {
+            return Boolean.FALSE;
+        } else return Boolean.TRUE;
+    }
+
+    // function to get feedback by the student for a specific month
+    public Feedback getFeedbackByStudentForMonth(String studentRollNumber, String semesterId, String messId, Date firstDateOfMonth) {
+        String query = "SELECT * FROM FEEDBACK WHERE WHERE mess_id = ? AND semester_id = ? AND student_roll_number = ? AND month_of_comment = ?";
+        Feedback feedback = null;
+
+        try {
+            feedback = jdbcTemplate.query(query, new BeanPropertyRowMapper<Feedback>(Feedback.class), studentRollNumber, semesterId, messId, firstDateOfMonth).get(0);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return feedback;
     }
 }

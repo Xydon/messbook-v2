@@ -8,7 +8,9 @@ public class ResponseWithError<T, X> {
     private T response;
     private ErrorData<String> error = new ErrorData<String>();
 
-    public ResponseWithError() {}
+    public ResponseWithError() {
+        this.error.setErrorCode(Errors.SUCCESS);
+    }
 
     public ResponseWithError(T response, ErrorData<String> error) {
         this.response = response;

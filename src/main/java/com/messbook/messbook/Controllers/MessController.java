@@ -10,10 +10,7 @@ import com.messbook.messbook.Services.MessService;
 import com.messbook.messbook.Services.SemesterService;
 import com.messbook.messbook.UtilsClasses.ResponseWithError;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 import java.util.List;
@@ -27,6 +24,7 @@ public class MessController {
     @Autowired
     SemesterService semesterService;
 
+    /// checked
     @GetMapping("api/mess/fetch")
     public ResponseWithError<Mess, MessErrors> getDetailsOfMess(@RequestParam(value = "mess_id") String mess_id) {
         return messService.getDetailsOfMess(mess_id);
@@ -83,5 +81,27 @@ public class MessController {
             return response;
         }
         return messService.getAllFeedbackOfMessForTheMonth(mess_id, currentSemesterId, monthDate);
+    }
+
+    @GetMapping("api/mess/feedback/fetch/{month}")
+    public ResponseWithError<Feedback, MessErrors> getAllFeedbackByStudentForMonth(
+            @RequestParam(value="mess_id") String mess_id,
+            @RequestParam(value="student_roll_number") String student_roll_number,
+            @PathVariable Date month
+    ) {
+        ResponseWithError<Semester_Details, SemesterErrors> semesterResponse = semesterService.getLatestSemester();
+        ResponseWithError<Feedback, MessErrors> response = new ResponseWithError<Feedback, MessErrors>();
+        response.configAsFailed();
+
+        if(semesterResponse.getError().getErrorCode().equals(Errors.FAILED)) {
+            return response;
+        }
+
+        return messService.getAllFeedbackOfStudentForTheMonth(student_roll_number, mess_id,  semesterResponse.getResponse().getId(), month);
+    }
+
+    @PostMapping("api/mess/feedback/create")
+    public ResponseWithError<Boolean, MessErrors> createFeedback(@RequestBody Feedback feedback) {
+        return null;
     }
 }

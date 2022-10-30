@@ -26,11 +26,13 @@ public class CollegeController {
      *
      * */
 
+    /// checked
     @GetMapping("api/college/extra_items_menu")
     public ResponseWithError<List<Extra_Item_Menu>, CollegeErrors> getExtraItemsMenu() {
         return collegeService.getExtraMenu();
     }
 
+    /// checked
     @GetMapping("api/college/hostel")
     public ResponseWithError<Hostel, CollegeErrors> getHostelDetails(@RequestParam(value = "hostelName") String hostelName) {
         return collegeService.getHostelDetails(hostelName);
