@@ -150,12 +150,12 @@ public class MessDao {
     }
 
     // function to get feedback by the student for a specific month
-    public Feedback getFeedbackByStudentForMonth(String studentRollNumber, String semesterId, String messId, Date firstDateOfMonth) {
+    public List<Feedback> getFeedbackByStudentForMonth(String studentRollNumber, String semesterId, String messId, Date firstDateOfMonth) {
         String query = "SELECT * FROM FEEDBACK WHERE WHERE mess_id = ? AND semester_id = ? AND student_roll_number = ? AND month_of_comment = ?";
-        Feedback feedback = null;
+        List<Feedback> feedback = null;
 
         try {
-            feedback = jdbcTemplate.query(query, new BeanPropertyRowMapper<Feedback>(Feedback.class), studentRollNumber, semesterId, messId, firstDateOfMonth).get(0);
+            feedback = jdbcTemplate.query(query, new BeanPropertyRowMapper<Feedback>(Feedback.class), studentRollNumber, semesterId, messId, firstDateOfMonth);
         } catch(Exception e) {
             System.out.println(e.getMessage());
         }

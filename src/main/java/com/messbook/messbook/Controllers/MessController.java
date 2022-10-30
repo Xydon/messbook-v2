@@ -6,13 +6,19 @@ import com.messbook.messbook.Entities.Semester_Details;
 import com.messbook.messbook.Enums.Errors;
 import com.messbook.messbook.Enums.MessErrors;
 import com.messbook.messbook.Enums.SemesterErrors;
+import com.messbook.messbook.ResponseStructures.FeedbackPresence;
 import com.messbook.messbook.Services.MessService;
 import com.messbook.messbook.Services.SemesterService;
+import com.messbook.messbook.UtilsClasses.DateUtils;
 import com.messbook.messbook.UtilsClasses.ResponseWithError;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.annotation.RequestScope;
 
 import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -34,7 +40,7 @@ public class MessController {
     @GetMapping("api/mess/feedback/fetch")
     public ResponseWithError<List<Feedback>, MessErrors> getAllFeedbackForMessByStudent(
             @RequestParam(value = "mess_id") String mess_id,
-            @RequestParam(value= "student_id") String student_roll_number
+            @RequestParam(value= "student_roll_number") String student_roll_number
     ) {
 
 
@@ -103,5 +109,42 @@ public class MessController {
     @PostMapping("api/mess/feedback/create")
     public ResponseWithError<Boolean, MessErrors> createFeedback(@RequestBody Feedback feedback) {
         return null;
+    }
+
+    @GetMapping("api/mess/feedback/presenceList")
+    public ResponseWithError<List<FeedbackPresence>, MessErrors> getFeedbackPresenceList(
+            @RequestParam(value="mess_id") String mess_id,
+            @RequestParam(value = "student_roll_number") String student_roll_number
+    ) {
+        ResponseWithError<List<Date>, SemesterErrors> listOfMonthsResponse = semesterService.listOfMonthInCurrentSemesterNow();
+        ResponseWithError<List<FeedbackPresence>, MessErrors> response = new ResponseWithError<List<FeedbackPresence>, MessErrors>();
+        ResponseWithError<Semester_Details, SemesterErrors> currentSemesterResponse = semesterService.getLatestSemester();
+
+        if(listOfMonthsResponse.hasFailed() || currentSemesterResponse.hasFailed()) {
+            response.configAsFailed();
+            return response;
+        }
+
+        List<Date> listOfMonth = listOfMonthsResponse.getResponse();
+        String currentSemesterId = currentSemesterResponse.getResponse().getId();
+
+        LinkedList<FeedbackPresence> feedbackPresences = new LinkedList<>();
+        for(Date firstDateOfMonth : listOfMonth) {
+            ResponseWithError<Feedback, MessErrors> feedbackResponse = messService.getAllFeedbackOfStudentForTheMonth(mess_id, student_roll_number, currentSemesterId, firstDateOfMonth);
+            FeedbackPresence presence = new FeedbackPresence();
+
+            if(feedbackResponse.hasFailed()) {
+                response.configAsFailed();
+                return response;
+            }
+
+            presence.setHasGivenFeedback(!feedbackResponse.retrieveErrorCode().equals(MessErrors.FEEDBACK_NOT_PRESENT));
+            presence.setMonthName(DateUtils.getMonthAt(feedbackResponse.getResponse().getMonth_of_comment().getMonth()));
+
+            feedbackPresences.add(presence);
+        }
+
+        response.config(feedbackPresences, Errors.SUCCESS);
+        return response;
     }
 }

@@ -4,29 +4,24 @@ import com.messbook.messbook.Enums.Errors;
 
 import java.util.List;
 
-public class ResponseWithError<T, X> {
+public class ResponseWithErrorDebug<T, X> {
     private T response;
-    private ErrorData<String> error = new ErrorData<String>();
+    private ErrorData<String> error = new ErrorData<>();
 
-    public ResponseWithError() {
-        this.error.setErrorCode(Errors.SUCCESS);
-    }
-
-    public ResponseWithError(T response, ErrorData<String> error) {
-        this.response = response;
-        this.error = error;
+    public T getResponse() {
+        return response;
     }
 
     public void setResponse(T response) {
         this.response = response;
     }
 
-    public T getResponse(){
-        return this.response;
+    public ErrorData<String> getError() {
+        return error;
     }
 
-    public ErrorData<String> getError() {
-        return this.error;
+    public void setError(ErrorData<String> error) {
+        this.error = error;
     }
 
     public void configError(String errorCode, String ...messages) {
@@ -57,12 +52,7 @@ public class ResponseWithError<T, X> {
         }
     }
 
-    public String retrieveErrorCode() {
+    public String retrieve() {
         return this.error.getErrorCode();
     }
-
-    public boolean hasFailed() {
-        return this.error.getErrorCode().equals(Errors.FAILED);
-    }
-
 }

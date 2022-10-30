@@ -5,6 +5,7 @@ import com.messbook.messbook.Entities.Feedback;
 import com.messbook.messbook.Entities.Mess;
 import com.messbook.messbook.Enums.Errors;
 import com.messbook.messbook.Enums.MessErrors;
+import com.messbook.messbook.ResponseStructures.FeedbackPresence;
 import com.messbook.messbook.UtilsClasses.ResponseWithError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,16 +52,21 @@ public class MessService {
     }
 
     public ResponseWithError<Feedback, MessErrors> getAllFeedbackOfStudentForTheMonth(String student_roll_number, String mess_id, String semester_id, Date firstDateOfMonth) {
-        Feedback feedback = messDao.getFeedbackByStudentForMonth(student_roll_number, semester_id, mess_id, firstDateOfMonth);
+        List<Feedback> feedback = messDao.getFeedbackByStudentForMonth(student_roll_number, semester_id, mess_id, firstDateOfMonth);
 
         ResponseWithError<Feedback, MessErrors> response = new ResponseWithError<Feedback, MessErrors>();
-        response.setResponse(feedback);
 
         if(feedback == null) {
             response.configAsFailed();
             return response;
         }
 
+        if(feedback.size() == 0) {
+            response.config(null, MessErrors.FEEDBACK_NOT_PRESENT);
+            return response;
+        }
+
+        response.setResponse(feedback.get(0));
         return response;
     }
 
@@ -82,7 +88,5 @@ public class MessService {
 
         return response;
     }
-
-
 
 }
