@@ -6,7 +6,6 @@ import com.messbook.messbook.Entities.Mess;
 import com.messbook.messbook.Enums.Errors;
 import com.messbook.messbook.Enums.MessErrors;
 import com.messbook.messbook.UtilsClasses.ResponseWithError;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,4 +49,6 @@ public class MessService {
 
         return response;
     }
+
+
 }

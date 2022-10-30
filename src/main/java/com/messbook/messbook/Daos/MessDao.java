@@ -1,8 +1,10 @@
 package com.messbook.messbook.Daos;
 
-import com.messbook.messbook.Entities.Feedback;
-import com.messbook.messbook.Entities.Mess;
+import com.messbook.messbook.Entities.*;
 import com.messbook.messbook.Enums.MessErrors;
+import com.messbook.messbook.ResponseStructures.ExtraItemWithCost;
+import com.messbook.messbook.ResponseStructures.MessPresent;
+import com.messbook.messbook.UtilsClasses.DateUtils;
 import com.messbook.messbook.UtilsClasses.ResponseWithError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -10,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 @Repository
@@ -22,6 +25,9 @@ public class MessDao {
     *    1. function to get the details for a mess -- done
     *    2. function to get the feedback for a mess given by a student in the current semester -- done
     *    3. function to get all the feedback for the mess for a specific month in the current semester -- done
+    *    4. function to get all the entries for the month -- done
+    *    5. function to get all the extra entries for a particular date -- done
+    *    6. function to mark absent for a range
     * */
 
     public ResponseWithError<Mess, MessErrors> getDetailsOfMess(String id){
@@ -67,5 +73,61 @@ public class MessDao {
         }
 
         return listOfFeedback;
+    }
+
+    // getting all the entries for the month
+    public List<MessPresent> getPresentInfoForMonth(String studentRoll, String messId, String semesterId, Date firstDayOfMonth, Date lastDateOfMonth) {
+        // last date of month will be provided by the service as it can also be the semester ending date
+
+        String query = "SELECT start_date, end_date FROM mess_absent WHERE start_date >= ? AND end_date <= ?";
+
+        List<Mess_Absent> messAbsentList = jdbcTemplate.query(query, new BeanPropertyRowMapper<Mess_Absent>(Mess_Absent.class), firstDayOfMonth, lastDateOfMonth);
+
+        LinkedList<MessPresent> messMonthList = new LinkedList<MessPresent>();
+
+        int curr = 0;
+        for(int i = 1; i <= lastDateOfMonth.getDate(); ++i) {
+            MessPresent info = new MessPresent();
+            info.setHasAte(true);
+
+            if(curr < messAbsentList.size() && i >= messAbsentList.get(curr).getStart_date().getDate()) {
+                info.setHasAte(false);
+                if(i == messAbsentList.get(curr).getEnd_date().getDate()) curr++;
+            }
+
+            messMonthList.add(info);
+        }
+
+        return messMonthList;
+    }
+
+    // getting the extra entry for the date of the current semester
+    public List<ExtraItemWithCost> getExtraEntryForDate(String studentRollNumber, String semesterId, String messId, Date date) {
+        String query = "SELECT item_name, price FROM mess_extra_entry, extra_item_menu WHERE student_roll_number = ? AND semester_id = ? AND mess_id = ? AND date = ? AND item_name = name";
+        try {
+            return jdbcTemplate.query(query, new BeanPropertyRowMapper<ExtraItemWithCost>(ExtraItemWithCost.class), studentRollNumber, semesterId, messId, date);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    // function to mark absent for a range
+    public Boolean markAbsent(Mess_Absent absentInfo) {
+        // the checking will happen at the level of service
+        String query = "INSERT INTO mess_absent VALUES (?, ?, ?, ?, ?);";
+
+        int count = 0;
+
+        try {
+            count = jdbcTemplate.update(query, absentInfo.getStudent_roll_number(), absentInfo.getSemester_id(), absentInfo.getMess_id(), absentInfo.getStart_date(), absentInfo.getEnd_date());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        if(count != 0) {
+            return Boolean.TRUE;
+        } else return Boolean.FALSE;
     }
 }
