@@ -37,6 +37,7 @@ public class MessController {
     }
 
     //////////////////// FEEDBACKS //////////////////////
+    /// checked
     @GetMapping("api/mess/feedback/fetch")
     public ResponseWithError<List<Feedback>, MessErrors> getAllFeedbackForMessByStudent(
             @RequestParam(value = "mess_id") String mess_id,
@@ -65,6 +66,7 @@ public class MessController {
 
     }
 
+    /// checked
     @GetMapping("api/mess/feedback/fetch/all")
     public ResponseWithError<List<Feedback>, MessErrors> getAllFeedbackOfMessForTheMonth(
             @RequestParam(value="mess_id") String mess_id,
@@ -89,6 +91,7 @@ public class MessController {
         return messService.getAllFeedbackOfMessForTheMonth(mess_id, currentSemesterId, monthDate);
     }
 
+    /// checked
     @GetMapping("api/mess/feedback/fetch/{month}")
     public ResponseWithError<Feedback, MessErrors> getAllFeedbackByStudentForMonth(
             @RequestParam(value="mess_id") String mess_id,
@@ -111,6 +114,7 @@ public class MessController {
         return null;
     }
 
+    /// checked
     @GetMapping("api/mess/feedback/presenceList")
     public ResponseWithError<List<FeedbackPresence>, MessErrors> getFeedbackPresenceList(
             @RequestParam(value="mess_id") String mess_id,
@@ -130,7 +134,7 @@ public class MessController {
 
         LinkedList<FeedbackPresence> feedbackPresences = new LinkedList<>();
         for(Date firstDateOfMonth : listOfMonth) {
-            ResponseWithError<Feedback, MessErrors> feedbackResponse = messService.getAllFeedbackOfStudentForTheMonth(mess_id, student_roll_number, currentSemesterId, firstDateOfMonth);
+            ResponseWithError<Feedback, MessErrors> feedbackResponse = messService.getAllFeedbackOfStudentForTheMonth(student_roll_number, mess_id, currentSemesterId, firstDateOfMonth);
             FeedbackPresence presence = new FeedbackPresence();
 
             if(feedbackResponse.hasFailed()) {
@@ -139,7 +143,7 @@ public class MessController {
             }
 
             presence.setHasGivenFeedback(!feedbackResponse.retrieveErrorCode().equals(MessErrors.FEEDBACK_NOT_PRESENT));
-            presence.setMonthName(DateUtils.getMonthAt(feedbackResponse.getResponse().getMonth_of_comment().getMonth()));
+            presence.setMonthName(DateUtils.getMonthAt(firstDateOfMonth.getMonth()));
 
             feedbackPresences.add(presence);
         }

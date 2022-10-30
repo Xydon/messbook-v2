@@ -134,12 +134,12 @@ public class MessDao {
 
     // function to create a feedback
     public Boolean createFeedback(Feedback feedback) {
-        String query= "INSERT INTO feedback VALUES (?, ?, ?, ?, ?)";
+        String query= "INSERT INTO feedback VALUES (?, ?, ?, ?, ?, ?)";
 
         int count = 0;
 
         try {
-            count = jdbcTemplate.update(query, feedback.getStudent_roll_number(), feedback.getSemester_id(), feedback.getMess_id(), feedback.getText(), feedback.getMonth_of_comment());
+            count = jdbcTemplate.update(query, feedback.getStudent_roll_number(), feedback.getSemester_id(), feedback.getMess_id(), feedback.getText(), feedback.getMonth_of_comment(), feedback.getRating());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -151,11 +151,11 @@ public class MessDao {
 
     // function to get feedback by the student for a specific month
     public List<Feedback> getFeedbackByStudentForMonth(String studentRollNumber, String semesterId, String messId, Date firstDateOfMonth) {
-        String query = "SELECT * FROM FEEDBACK WHERE WHERE mess_id = ? AND semester_id = ? AND student_roll_number = ? AND month_of_comment = ?";
+        String query = "SELECT * FROM FEEDBACK WHERE mess_id = ? AND semester_id = ? AND student_roll_number = ? AND month_of_comment = ?";
         List<Feedback> feedback = null;
 
         try {
-            feedback = jdbcTemplate.query(query, new BeanPropertyRowMapper<Feedback>(Feedback.class), studentRollNumber, semesterId, messId, firstDateOfMonth);
+            feedback = jdbcTemplate.query(query, new BeanPropertyRowMapper<Feedback>(Feedback.class), messId, semesterId, studentRollNumber, firstDateOfMonth);
         } catch(Exception e) {
             System.out.println(e.getMessage());
         }
