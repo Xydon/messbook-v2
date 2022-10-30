@@ -6,12 +6,14 @@ import com.messbook.messbook.Entities.Semester_Details;
 import com.messbook.messbook.Enums.Errors;
 import com.messbook.messbook.Enums.MessErrors;
 import com.messbook.messbook.Enums.SemesterErrors;
+import com.messbook.messbook.ResponseStructures.ExtraItemWithCost;
 import com.messbook.messbook.ResponseStructures.FeedbackPresence;
 import com.messbook.messbook.ResponseStructures.MessPresent;
 import com.messbook.messbook.Services.MessService;
 import com.messbook.messbook.Services.SemesterService;
 import com.messbook.messbook.UtilsClasses.DateUtils;
 import com.messbook.messbook.UtilsClasses.ResponseWithError;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -150,6 +152,7 @@ public class MessController {
         return response;
     }
 
+    /// checked
     @GetMapping("api/mess/service/presenceList/{month}")
     public ResponseWithError<List<MessPresent>, MessErrors> getPresenceList(
             @PathVariable Date month,
@@ -158,5 +161,23 @@ public class MessController {
             @RequestParam(value = "semester_id") String semester_id
     ) {
         return messService.getPresentList(student_roll_number, mess_id, semester_id, month);
+    }
+
+    /// checked
+    @GetMapping("api/mess/extras/{date}")
+    public ResponseWithError<List<ExtraItemWithCost>, MessErrors> getExtraEntryForDate(
+            @PathVariable Date date,
+            @RequestParam(value = "student_roll_number") String student_roll_number,
+            @RequestParam(value = "mess_id") String mess_id
+    ) {
+        ResponseWithError<Semester_Details, SemesterErrors> semesterResponse = semesterService.getLatestSemester();
+        ResponseWithError<List<ExtraItemWithCost>, MessErrors> response = new ResponseWithError<>();
+        response.configAsFailed();
+
+        if(semesterResponse.getError().getErrorCode().equals(Errors.FAILED)) {
+            return response;
+        }
+
+        return messService.getExtraEntryForDate(student_roll_number, mess_id, semesterResponse.getResponse().getId(), date);
     }
 }

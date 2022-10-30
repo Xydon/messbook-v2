@@ -3,11 +3,14 @@ package com.messbook.messbook.Services;
 import com.messbook.messbook.Daos.MessDao;
 import com.messbook.messbook.Entities.Feedback;
 import com.messbook.messbook.Entities.Mess;
+import com.messbook.messbook.Entities.Mess_Extra_Entry;
 import com.messbook.messbook.Enums.Errors;
 import com.messbook.messbook.Enums.MessErrors;
+import com.messbook.messbook.ResponseStructures.ExtraItemWithCost;
 import com.messbook.messbook.ResponseStructures.FeedbackPresence;
 import com.messbook.messbook.ResponseStructures.MessPresent;
 import com.messbook.messbook.UtilsClasses.ResponseWithError;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -102,6 +105,24 @@ public class MessService {
         response.setResponse(messPresentList);
 
         if(messPresentList == null) {
+            response.configAsFailed();
+        }
+
+        return response;
+    }
+
+    public ResponseWithError<List<ExtraItemWithCost>, MessErrors> getExtraEntryForDate(String student_roll_number, String mess_id, String semester_id, Date date) {
+        ResponseWithError<List<ExtraItemWithCost>, MessErrors> response= new ResponseWithError<>();
+        List<ExtraItemWithCost> messExtraEntries = messDao.getExtraEntryForDate(
+                student_roll_number,
+                mess_id,
+                semester_id,
+                date
+        );
+
+        response.setResponse(messExtraEntries);
+
+        if(messExtraEntries == null) {
             response.configAsFailed();
         }
 

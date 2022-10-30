@@ -29,7 +29,10 @@ public class MailController {
 
     //* getting the mails -- received
     @GetMapping("api/mails/received")
-    public ResponseWithError<List<Mail>,MailErrors> getReceivedMailOf(@RequestParam(value = "cmail_id") String cmail_id, @RequestParam(value = "batchNumber") int batchNumber) {
+    public ResponseWithError<List<Mail>,MailErrors> getReceivedMailOf (
+            @RequestParam(value = "cmail_id") String cmail_id,
+            @RequestParam(value = "batchNumber") int batchNumber
+    ) {
         ResponseWithError<List<Mail>, MailErrors> response = new ResponseWithError<List<Mail>, MailErrors>();
         ResponseWithError<Semester_Details, SemesterErrors> latestSemesterResponse = semesterService.getLatestSemester();
         if(latestSemesterResponse.getError().getErrorCode() == SemesterErrors.FAILED) {
