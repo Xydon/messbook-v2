@@ -22,6 +22,7 @@ public class SemesterDao {
     *  2. getting the list of months in the current semester
     * */
 
+    /// checked
     // getting the latest semester details
     public Semester_Details getLatestSemester() {
         String query = "SELECT * FROM Semester_Details ORDER BY start_date;";
@@ -36,6 +37,7 @@ public class SemesterDao {
         return latestSemester;
     }
 
+    /// checked
     // list of months in the current semester
     public List<Date> getMonthListOfMonthsInCurrentSemester() {
         Semester_Details currentSemesterDetails = this.getLatestSemester();
@@ -67,6 +69,7 @@ public class SemesterDao {
         return listOfMonths;
     }
 
+    /// checked
     // list of months in the current semester less than ending date
     public List<Date> listOfMonthInCurrentSemesterNow() {
         Semester_Details currentSemesterDetails = this.getLatestSemester();

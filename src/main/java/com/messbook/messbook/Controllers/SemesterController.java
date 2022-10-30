@@ -19,11 +19,13 @@ public class SemesterController {
     @Autowired
     SemesterService semesterService;
 
+    /// checked
     @GetMapping("api/semester/latestSemester")
     public ResponseWithError<Semester_Details, SemesterErrors> getLatestSemester() {
         return semesterService.getLatestSemester();
     }
 
+    /// checked
     @GetMapping("api/semester/monthList")
     public ResponseWithError<List<Date>, SemesterErrors> getMonthListOfMonthsInCurrentSemester(@RequestParam(value="isCurrent") boolean isCurrent) {
         if(isCurrent) {
