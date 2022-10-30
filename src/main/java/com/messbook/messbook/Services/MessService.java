@@ -6,6 +6,7 @@ import com.messbook.messbook.Entities.Mess;
 import com.messbook.messbook.Enums.Errors;
 import com.messbook.messbook.Enums.MessErrors;
 import com.messbook.messbook.ResponseStructures.FeedbackPresence;
+import com.messbook.messbook.ResponseStructures.MessPresent;
 import com.messbook.messbook.UtilsClasses.ResponseWithError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -89,4 +90,21 @@ public class MessService {
         return response;
     }
 
+    public ResponseWithError<List<MessPresent>, MessErrors> getPresentList(
+            String student_roll_number,
+            String mess_id,
+            String semester_id,
+            Date firstDateOfMonth
+    ){
+        ResponseWithError<List<MessPresent>, MessErrors> response = new ResponseWithError<>();
+        List<MessPresent> messPresentList = messDao.getPresentInfoForMonth(student_roll_number, mess_id, semester_id, firstDateOfMonth, null);
+
+        response.setResponse(messPresentList);
+
+        if(messPresentList == null) {
+            response.configAsFailed();
+        }
+
+        return response;
+    }
 }
