@@ -241,4 +241,43 @@ public class MessService {
         return response;
     }
 
+    public ResponseWithError<Boolean, MessErrors> hasFiledMessChangeApplication(
+            String mess_id,
+            String student_roll_number,
+            String semester_id
+    ) {
+        int verdict = messDao.hasFiledMessChangeApplication(mess_id, student_roll_number, semester_id);
+        ResponseWithError<Boolean, MessErrors> response = new ResponseWithError<>();
+        if(verdict == -1) {
+            response.configAsFailed("error in determining");
+        } else if(verdict == 0) {
+            response.setResponse(FALSE);
+        } else {
+            response.setResponse(Boolean.TRUE);
+        }
+        return response;
+    }
+
+    public ResponseWithError<Boolean, MessErrors> fileMessChangeApplication(Mess_Change_Application mess_change_application) {
+        ResponseWithError<Boolean, MessErrors> hasFiledMessChangeResponse = this.hasFiledMessChangeApplication(
+                mess_change_application.getMess_id(), mess_change_application.getStudent_roll_number(), mess_change_application.getSemester_id());
+
+        if(hasFiledMessChangeResponse.hasFailed()) return hasFiledMessChangeResponse;
+
+        if(hasFiledMessChangeResponse.getResponse().compareTo(Boolean.TRUE) == 0) {
+            hasFiledMessChangeResponse.config(FALSE, MessErrors.MESS_CHANGE_APPLICATION_ALREADY_PRESENT, "mess change application already present");
+            return hasFiledMessChangeResponse;
+        }
+
+        boolean verdict = messDao.fileMessApplication(mess_change_application);
+
+        if(!verdict) {
+            hasFiledMessChangeResponse.configAsFailed();
+            return hasFiledMessChangeResponse;
+        }
+
+        hasFiledMessChangeResponse.config(Boolean.TRUE, MessErrors.SUCCESS);
+        return hasFiledMessChangeResponse;
+    }
+
 }

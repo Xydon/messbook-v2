@@ -81,7 +81,7 @@ public class MessDao {
     // getting all the entries for the month
     public List<MessPresent> getPresentInfoForMonth(String studentRoll, String messId, String semesterId, Date firstDayOfMonth, Date lastDateOfMonth) {
         // last date of month will be provided by the service as it can also be the semester ending date
-        if(lastDateOfMonth == null) {
+        if (lastDateOfMonth == null) {
             lastDateOfMonth = DateUtils.getLastDateOfMonth(firstDayOfMonth);
         }
         String query = "SELECT start_date, end_date FROM mess_absent WHERE start_date >= ? AND end_date <= ?";
@@ -173,23 +173,23 @@ public class MessDao {
         List<Student> studentList = null;
         try {
             studentList = jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Student.class), semester_id, mess_id);
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return studentList;
     }
 
-    public Boolean createExtraEntry(Mess_Extra_Entry extra_entry){
+    public Boolean createExtraEntry(Mess_Extra_Entry extra_entry) {
         String query = "INSERT INTO mess_extra_entry VALUES (?,?,?,?,?);";
         int count = 0;
 
         try {
             count = jdbcTemplate.update(query, extra_entry.getStudent_roll_number(), extra_entry.getSemester_id(), extra_entry.getMess_id(), extra_entry.getItem_name(), extra_entry.getDate());
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
-        if(count == 0) {
+        if (count == 0) {
             return Boolean.FALSE;
         } else {
             return Boolean.TRUE;
@@ -202,10 +202,51 @@ public class MessDao {
 
         try {
             studentList = jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Student.class), semester_id, mess_id, date, date);
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
         return studentList;
+    }
+
+    public int hasFiledMessChangeApplication(
+            String mess_id,
+            String student_roll_number,
+            String semester_id
+    ) {
+        String query = "SELECT * FROM mess_change_application WHERE mess_id = ? AND student_roll_number = ? AND semester_id = ?";
+        List<Mess_Change_Application> messChangeApplications = null;
+
+        try {
+            messChangeApplications = jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Mess_Change_Application.class), mess_id, student_roll_number, semester_id);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return -1;
+        }
+
+        if (messChangeApplications.size() == 0) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
+    public boolean fileMessApplication(Mess_Change_Application mess_change_application) {
+        String query = "INSERT INTO mess_change_application VALUES (?,?,?,?,?);";
+        int count = 0;
+
+        try {
+            count = jdbcTemplate.update(query,
+                    mess_change_application.getMess_id(),
+                    mess_change_application.getStudent_roll_number(),
+                    mess_change_application.getSemester_id(),
+                    mess_change_application.getReason(),
+                    mess_change_application.getStatus()
+                    );
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } ;
+
+        return count != 0;
     }
 }

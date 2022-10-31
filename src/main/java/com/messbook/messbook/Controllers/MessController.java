@@ -206,7 +206,7 @@ public class MessController {
 
     /// checked
     @GetMapping("api/mess/absentList")
-    public ResponseWithError<List<Student>, MessErrors> studentsNotEatingOn(
+    public ResponseWithError<List<Student>, MessErrors> studentsNotEatingOn (
             @RequestParam(value = "mess_id") String mess_id,
             @RequestParam(value = "date") Date date
     ) {
@@ -221,5 +221,54 @@ public class MessController {
         String semesterId = semesterResponse.getResponse().getId();
 
         return messService.getStudentsNotEatingOn(mess_id, semesterId, date);
+    }
+
+    @GetMapping("api/mess/change/exists")
+    public ResponseWithError<Boolean, MessErrors> hasFiledMessChangeApplication(
+            @RequestParam(value="mess_id") String mess_id,
+            @RequestParam(value="student_roll_number") String student_roll_number
+    ) {
+        ResponseWithError<Boolean,MessErrors> response = new ResponseWithError<>();
+        ResponseWithError<Semester_Details, SemesterErrors> semesterDetailsResponse = semesterService.getLatestSemester();
+
+        if(semesterDetailsResponse.hasFailed()) {
+            response.configAsFailed();
+            return response;
+        }
+
+        String semesterId = semesterDetailsResponse.getResponse().getId();
+        ResponseWithError<Boolean, MessErrors> filingResponse = messService.hasFiledMessChangeApplication(mess_id, student_roll_number, semesterId);
+
+        if(filingResponse.hasFailed()) {
+            response.configAsFailed();
+            return response;
+        }
+
+        return filingResponse;
+    }
+
+    /// checked
+    @PostMapping("api/mess/change")
+    public ResponseWithError<Boolean, MessErrors> createMessChangeApplication(
+            @RequestBody Mess_Change_Application mess_change_application
+    ) {
+        ResponseWithError<Boolean,MessErrors> response = new ResponseWithError<>();
+        ResponseWithError<Semester_Details, SemesterErrors> semesterDetailsResponse = semesterService.getLatestSemester();
+
+        if(semesterDetailsResponse.hasFailed()) {
+            response.configAsFailed();
+            return response;
+        }
+
+        String semesterId = semesterDetailsResponse.getResponse().getId();
+        ResponseWithError<Boolean, MessErrors> filingResponse = messService.hasFiledMessChangeApplication(
+                mess_change_application.getMess_id(), mess_change_application.getStudent_roll_number(), mess_change_application.getSemester_id());
+
+        if(filingResponse.hasFailed()) {
+            response.configAsFailed();
+            return response;
+        }
+
+        return messService.fileMessChangeApplication(mess_change_application);
     }
 }
