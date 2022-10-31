@@ -4,6 +4,7 @@ import com.messbook.messbook.Daos.MessDao;
 import com.messbook.messbook.Entities.Feedback;
 import com.messbook.messbook.Entities.Mess;
 import com.messbook.messbook.Entities.Mess_Absent;
+import com.messbook.messbook.Entities.Student;
 import com.messbook.messbook.Enums.Errors;
 import com.messbook.messbook.Enums.MessErrors;
 import com.messbook.messbook.ResponseStructures.ExtraItemWithCost;
@@ -201,6 +202,19 @@ public class MessService {
         }
 
         response.config(Boolean.TRUE, MessErrors.SUCCESS, "successfully inserted");
+        return response;
+    }
+
+    public ResponseWithError<List<Student>, MessErrors> getStudentsOfMess(String mess_id, String semester_id) {
+        ResponseWithError<List<Student>, MessErrors> response = new ResponseWithError<>();
+        List<Student> studentList = messDao.getAllStudentOfMess(mess_id, semester_id);
+
+        response.setResponse(studentList);
+
+        if(studentList == null) {
+            response.configAsFailed("cannot get students of the mess");
+        }
+
         return response;
     }
 

@@ -1,9 +1,6 @@
 package com.messbook.messbook.Controllers;
 
-import com.messbook.messbook.Entities.Feedback;
-import com.messbook.messbook.Entities.Mess;
-import com.messbook.messbook.Entities.Mess_Absent;
-import com.messbook.messbook.Entities.Semester_Details;
+import com.messbook.messbook.Entities.*;
 import com.messbook.messbook.Enums.Errors;
 import com.messbook.messbook.Enums.MessErrors;
 import com.messbook.messbook.Enums.SemesterErrors;
@@ -193,5 +190,10 @@ public class MessController {
         return messService.markAbsent(firstDateOfMonth, messAbsent);
     }
 
+    /// checked
+    @GetMapping("api/mess/students")
+    public ResponseWithError<List<Student>, MessErrors> getStudentsOfMess(@RequestParam(value = "mess_id") String mess_id, @RequestParam(value = "semester_id") String semester_id) {
+        return messService.getStudentsOfMess(mess_id, semester_id);
+    }
 
 }
