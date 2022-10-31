@@ -4,7 +4,7 @@ import com.messbook.messbook.Enums.Errors;
 
 import java.util.List;
 
-public class ResponseWithError<T, X> {
+public class ResponseWithError<T, X extends Errors> {
     private T response;
     private ErrorData<String> error = new ErrorData<String>();
 

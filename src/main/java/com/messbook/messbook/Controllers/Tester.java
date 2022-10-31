@@ -20,7 +20,7 @@ public class Tester {
     Timer timer  = new Timer();
 
     @GetMapping("/xyz")
-    public static ResponseWithErrorDebug<Boolean, Void> test() {
-        return new ResponseWithErrorDebug<>();
+    public static void test() {
+
     }
 }

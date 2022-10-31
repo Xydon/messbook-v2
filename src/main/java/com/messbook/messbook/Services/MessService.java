@@ -3,14 +3,13 @@ package com.messbook.messbook.Services;
 import com.messbook.messbook.Daos.MessDao;
 import com.messbook.messbook.Entities.Feedback;
 import com.messbook.messbook.Entities.Mess;
-import com.messbook.messbook.Entities.Mess_Extra_Entry;
+import com.messbook.messbook.Entities.Mess_Absent;
 import com.messbook.messbook.Enums.Errors;
 import com.messbook.messbook.Enums.MessErrors;
 import com.messbook.messbook.ResponseStructures.ExtraItemWithCost;
-import com.messbook.messbook.ResponseStructures.FeedbackPresence;
 import com.messbook.messbook.ResponseStructures.MessPresent;
+import com.messbook.messbook.UtilsClasses.DateUtils;
 import com.messbook.messbook.UtilsClasses.ResponseWithError;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,13 +26,14 @@ public class MessService {
     public ResponseWithError<Mess, MessErrors> getDetailsOfMess(String id) {
         return messDao.getDetailsOfMess(id);
     }
+
     public ResponseWithError<List<Feedback>, MessErrors> getAllFeedbackForMessByStudent(String mess_id, String student_roll_number, String semester_id) {
         List<Feedback> feedbackList = messDao.getAllFeedbackForMessByStudent(mess_id, student_roll_number, semester_id);
 
-        ResponseWithError<List<Feedback>,MessErrors> response = new ResponseWithError<List<Feedback>, MessErrors>();
+        ResponseWithError<List<Feedback>, MessErrors> response = new ResponseWithError<List<Feedback>, MessErrors>();
         response.setResponse(feedbackList);
 
-        if(feedbackList == null) {
+        if (feedbackList == null) {
             response.configError(MessErrors.FAILED, "Cannot fetch feedbacks");
         } else {
             response.configError(MessErrors.SUCCESS);
@@ -48,24 +48,29 @@ public class MessService {
         ResponseWithError<List<Feedback>, MessErrors> response = new ResponseWithError<List<Feedback>, MessErrors>();
         response.config(feedbackList, Errors.SUCCESS);
 
-        if(feedbackList == null) {
+        if (feedbackList == null) {
             response.configError(Errors.FAILED, "failed to get the feedbacks, try again");
         }
 
         return response;
     }
 
-    public ResponseWithError<Feedback, MessErrors> getAllFeedbackOfStudentForTheMonth(String student_roll_number, String mess_id, String semester_id, Date firstDateOfMonth) {
+    public ResponseWithError<Feedback, MessErrors> getAllFeedbackOfStudentForTheMonth(
+            String student_roll_number,
+            String mess_id,
+            String semester_id,
+            Date firstDateOfMonth
+    ) {
         List<Feedback> feedback = messDao.getFeedbackByStudentForMonth(student_roll_number, semester_id, mess_id, firstDateOfMonth);
 
         ResponseWithError<Feedback, MessErrors> response = new ResponseWithError<Feedback, MessErrors>();
 
-        if(feedback == null) {
+        if (feedback == null) {
             response.configAsFailed();
             return response;
         }
 
-        if(feedback.size() == 0) {
+        if (feedback.size() == 0) {
             response.config(null, MessErrors.FEEDBACK_NOT_PRESENT);
             return response;
         }
@@ -76,9 +81,14 @@ public class MessService {
 
     public ResponseWithError<Boolean, MessErrors> createFeedback(Feedback feedback) {
         ResponseWithError<Boolean, MessErrors> response = new ResponseWithError<Boolean, MessErrors>();
-        ResponseWithError<Feedback, MessErrors> previousFeedback = this.getAllFeedbackOfStudentForTheMonth(feedback.getStudent_roll_number(), feedback.getMess_id(), feedback.getSemester_id(), feedback.getMonth_of_comment());
+        ResponseWithError<Feedback, MessErrors> previousFeedback = this.getAllFeedbackOfStudentForTheMonth(
+                feedback.getStudent_roll_number(),
+                feedback.getMess_id(),
+                feedback.getSemester_id(),
+                feedback.getMonth_of_comment()
+        );
 
-        if(previousFeedback.getError().getErrorCode().equals(Errors.SUCCESS)) {
+        if (previousFeedback.getError().getErrorCode().equals(Errors.SUCCESS)) {
             response.configAsFailed("feedback for this month is already present");
             return response;
         }
@@ -86,7 +96,7 @@ public class MessService {
         Boolean verdict = messDao.createFeedback(feedback);
         response.setResponse(verdict);
 
-        if(Boolean.compare(verdict, Boolean.FALSE) == 0) {
+        if (Boolean.compare(verdict, Boolean.FALSE) == 0) {
             response.configAsFailed();
         }
 
@@ -98,13 +108,13 @@ public class MessService {
             String mess_id,
             String semester_id,
             Date firstDateOfMonth
-    ){
+    ) {
         ResponseWithError<List<MessPresent>, MessErrors> response = new ResponseWithError<>();
         List<MessPresent> messPresentList = messDao.getPresentInfoForMonth(student_roll_number, mess_id, semester_id, firstDateOfMonth, null);
 
         response.setResponse(messPresentList);
 
-        if(messPresentList == null) {
+        if (messPresentList == null) {
             response.configAsFailed();
         }
 
@@ -112,7 +122,7 @@ public class MessService {
     }
 
     public ResponseWithError<List<ExtraItemWithCost>, MessErrors> getExtraEntryForDate(String student_roll_number, String mess_id, String semester_id, Date date) {
-        ResponseWithError<List<ExtraItemWithCost>, MessErrors> response= new ResponseWithError<>();
+        ResponseWithError<List<ExtraItemWithCost>, MessErrors> response = new ResponseWithError<>();
         List<ExtraItemWithCost> messExtraEntries = messDao.getExtraEntryForDate(
                 student_roll_number,
                 mess_id,
@@ -122,10 +132,69 @@ public class MessService {
 
         response.setResponse(messExtraEntries);
 
-        if(messExtraEntries == null) {
+        if (messExtraEntries == null) {
             response.configAsFailed();
         }
 
+        return response;
+    }
+
+    public ResponseWithError<Boolean, MessErrors> markAbsent(
+            String student_roll_number,
+            String mess_id,
+            String semester_id,
+            Date firstDateOfMonth,
+            Mess_Absent mess_absent
+    ) {
+        ResponseWithError<List<MessPresent>, MessErrors> presentListResponse = this.getPresentList(
+                student_roll_number,
+                mess_id,
+                semester_id,
+                firstDateOfMonth
+        );
+        ResponseWithError<Boolean, MessErrors> response = new ResponseWithError<>();
+
+        if (presentListResponse == null) {
+            response.configAsFailed();
+            return response;
+        }
+
+        int startDate = mess_absent.getStart_date().getDate();
+        int endDate = mess_absent.getEnd_date().getDate();
+        List<MessPresent> messPresentList = presentListResponse.getResponse();
+        int firstDateOfMonthValue = firstDateOfMonth.getDate();
+        int lastDateOfMonthValue = DateUtils.getLastDateOfMonth(firstDateOfMonth).getDate();
+
+        if(startDate > endDate) {
+            response.config(null, MessErrors.MESS_ABSENT_RANGE_OUT_OF_BOUNDS, "supplied date is not valid as start is greater than end");
+            return response;
+        }
+
+        // belongs to the month
+        if (startDate < firstDateOfMonthValue || endDate > lastDateOfMonthValue) {
+            response.config(null, MessErrors.MESS_ABSENT_RANGE_OUT_OF_BOUNDS,
+                    "supplied date doesn't belongs to current month, consider supplying the date in the current month");
+            return response;
+        }
+
+        // not intersecting
+        for (int i = startDate; i <= endDate; ++i) {
+            if (messPresentList.get(i - 1).isHasAte()) {
+                response.config(null, MessErrors.INTERSECTING_MESS_ABSENT, "supplied date intersects with previous entry");
+                return response;
+            }
+        }
+
+        // greater than today
+        java.util.Date today = new java.util.Date();
+        int todayDate = today.getDate();
+
+        if(todayDate>= startDate) {
+            response.config(null, MessErrors.MESS_ABSENT_CANNOT_BE_BEFORE, "supplied date cannot be before today");
+            return response;
+        }
+
+        response.config(Boolean.TRUE, MessErrors.SUCCESS, "successfully inserted");
         return response;
     }
 }
