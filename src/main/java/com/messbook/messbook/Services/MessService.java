@@ -228,4 +228,17 @@ public class MessService {
         return response;
     }
 
+    public ResponseWithError<List<Student>, MessErrors> getStudentsNotEatingOn(String mess_id, String semester_id, Date date) {
+        ResponseWithError<List<Student>, MessErrors> response = new ResponseWithError<>();
+        List<Student> studentList = messDao.getStudentsNotEatingOn(mess_id, semester_id, date);
+
+        response.setResponse(studentList);
+
+        if(studentList == null) {
+            response.configAsFailed();
+        }
+
+        return response;
+    }
+
 }

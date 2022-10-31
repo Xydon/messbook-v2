@@ -195,4 +195,17 @@ public class MessDao {
             return Boolean.TRUE;
         }
     }
+
+    public List<Student> getStudentsNotEatingOn(String mess_id, String semester_id, Date date) {
+        String query = "SELECT * FROM Student WHERE roll_number IN (SELECT student_roll_number FROM mess_absent WHERE semester_id = ? AND mess_id = ? AND start_date <= ? AND end_date >= ?);";
+        List<Student> studentList = null;
+
+        try {
+            studentList = jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Student.class), semester_id, mess_id, date, date);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return studentList;
+    }
 }

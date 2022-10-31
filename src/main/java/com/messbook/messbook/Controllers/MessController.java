@@ -196,10 +196,30 @@ public class MessController {
         return messService.getStudentsOfMess(mess_id, semester_id);
     }
 
+    /// checked
     @PostMapping("api/mess/createExtraEntry")
     public ResponseWithError<Boolean, MessErrors> createExtraEntry(
             @RequestBody Mess_Extra_Entry extra_entry
     ) {
         return messService.createExtraEntry(extra_entry);
+    }
+
+    /// checked
+    @GetMapping("api/mess/absentList")
+    public ResponseWithError<List<Student>, MessErrors> studentsNotEatingOn(
+            @RequestParam(value = "mess_id") String mess_id,
+            @RequestParam(value = "date") Date date
+    ) {
+        ResponseWithError<Semester_Details, SemesterErrors> semesterResponse = semesterService.getLatestSemester();
+        ResponseWithError<List<Student>, MessErrors> response = new ResponseWithError<>();
+
+        if(semesterResponse.hasFailed()) {
+            response.configAsFailed("cannot get absent list");
+            return response;
+        }
+
+        String semesterId = semesterResponse.getResponse().getId();
+
+        return messService.getStudentsNotEatingOn(mess_id, semesterId, date);
     }
 }
