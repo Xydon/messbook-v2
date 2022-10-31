@@ -110,9 +110,10 @@ public class MessController {
         return messService.getAllFeedbackOfStudentForTheMonth(student_roll_number, mess_id,  semesterResponse.getResponse().getId(), month);
     }
 
+    /// checked
     @PostMapping("api/mess/feedback/create")
     public ResponseWithError<Boolean, MessErrors> createFeedback(@RequestBody Feedback feedback) {
-        return null;
+        return messService.createFeedback(feedback);
     }
 
     /// checked
@@ -182,6 +183,7 @@ public class MessController {
         return messService.getExtraEntryForDate(student_roll_number, mess_id, semesterResponse.getResponse().getId(), date);
     }
 
+    /// checked
     @PostMapping("api/mess/markAbsent")
     public ResponseWithError<Boolean, MessErrors> markAbsent(
             @RequestBody Mess_Absent messAbsent,
@@ -189,4 +191,5 @@ public class MessController {
     ) {
         return messService.markAbsent(firstDateOfMonth, messAbsent);
     }
+
 }
