@@ -179,5 +179,20 @@ public class MessDao {
         return studentList;
     }
 
+    public Boolean createExtraEntry(Mess_Extra_Entry extra_entry){
+        String query = "INSERT INTO mess_extra_entry VALUES (?,?,?,?,?);";
+        int count = 0;
 
+        try {
+            count = jdbcTemplate.update(query, extra_entry.getStudent_roll_number(), extra_entry.getSemester_id(), extra_entry.getMess_id(), extra_entry.getItem_name(), extra_entry.getDate());
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        if(count == 0) {
+            return Boolean.FALSE;
+        } else {
+            return Boolean.TRUE;
+        }
+    }
 }

@@ -1,10 +1,7 @@
 package com.messbook.messbook.Services;
 
 import com.messbook.messbook.Daos.MessDao;
-import com.messbook.messbook.Entities.Feedback;
-import com.messbook.messbook.Entities.Mess;
-import com.messbook.messbook.Entities.Mess_Absent;
-import com.messbook.messbook.Entities.Student;
+import com.messbook.messbook.Entities.*;
 import com.messbook.messbook.Enums.Errors;
 import com.messbook.messbook.Enums.MessErrors;
 import com.messbook.messbook.ResponseStructures.ExtraItemWithCost;
@@ -213,6 +210,19 @@ public class MessService {
 
         if(studentList == null) {
             response.configAsFailed("cannot get students of the mess");
+        }
+
+        return response;
+    }
+
+    public ResponseWithError<Boolean, MessErrors> createExtraEntry(Mess_Extra_Entry mess_extra_entry) {
+        ResponseWithError<Boolean, MessErrors> response = new ResponseWithError<>();
+        Boolean verdict = messDao.createExtraEntry(mess_extra_entry);
+
+        response.setResponse(verdict);
+
+        if(Boolean.compare(verdict, FALSE) == 0) {
+            response.configAsFailed();
         }
 
         return response;

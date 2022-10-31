@@ -196,4 +196,10 @@ public class MessController {
         return messService.getStudentsOfMess(mess_id, semester_id);
     }
 
+    @PostMapping("api/mess/createExtraEntry")
+    public ResponseWithError<Boolean, MessErrors> createExtraEntry(
+            @RequestBody Mess_Extra_Entry extra_entry
+    ) {
+        return messService.createExtraEntry(extra_entry);
+    }
 }
