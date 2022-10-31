@@ -167,4 +167,17 @@ public class MessDao {
 
         return feedback;
     }
+
+    public List<Student> getAllStudentOfMess(String mess_id, String semester_id) {
+        String query = "SELECT * FROM Student WHERE roll_number IN (SELECT student_roll_number FROM semester_info WHERE semester_id = ? AND mess_id = ?);";
+        List<Student> studentList = null;
+        try {
+            studentList = jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Student.class), semester_id, mess_id);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return studentList;
+    }
+
+
 }

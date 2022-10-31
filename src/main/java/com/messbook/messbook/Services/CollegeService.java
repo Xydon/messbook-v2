@@ -1,6 +1,7 @@
 package com.messbook.messbook.Services;
 
 import com.messbook.messbook.Daos.CollegeDao;
+import com.messbook.messbook.Entities.Department;
 import com.messbook.messbook.Entities.Extra_Item_Menu;
 import com.messbook.messbook.Entities.Hostel;
 import com.messbook.messbook.Enums.CollegeErrors;
@@ -45,6 +46,18 @@ public class CollegeService {
         if(hostel == null) {
             response.configAsFailed("failed to get the hostel");
             return response;
+        }
+
+        return response;
+    }
+
+    public ResponseWithError<Department, CollegeErrors> getDepartmentDetails(String departmentName) {
+        ResponseWithError<Department, CollegeErrors> response = new ResponseWithError<>();
+        Department dept = collegeDao.getDepartmentDetails(departmentName);
+        response.setResponse(dept);
+
+        if(dept == null) {
+            response.configAsFailed("failed to get the department details");
         }
 
         return response;

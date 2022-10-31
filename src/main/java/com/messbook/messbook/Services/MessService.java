@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.util.List;
 
+import static java.lang.Boolean.FALSE;
+
 @Service
 public class MessService {
 
@@ -96,7 +98,7 @@ public class MessService {
         Boolean verdict = messDao.createFeedback(feedback);
         response.setResponse(verdict);
 
-        if (Boolean.compare(verdict, Boolean.FALSE) == 0) {
+        if (Boolean.compare(verdict, FALSE) == 0) {
             response.configAsFailed();
         }
 
@@ -188,6 +190,14 @@ public class MessService {
                 response.config(null, MessErrors.INTERSECTING_MESS_ABSENT, "supplied date intersects with previous entry");
                 return response;
             }
+        }
+
+        // saving
+        Boolean verdict = messDao.markAbsent(mess_absent);
+
+        if(Boolean.compare(verdict, FALSE) == 0) {
+            response.configAsFailed();
+            return response;
         }
 
         response.config(Boolean.TRUE, MessErrors.SUCCESS, "successfully inserted");

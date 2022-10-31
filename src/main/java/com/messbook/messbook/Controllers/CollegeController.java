@@ -1,15 +1,13 @@
 package com.messbook.messbook.Controllers;
 
+import com.messbook.messbook.Entities.Department;
 import com.messbook.messbook.Entities.Extra_Item_Menu;
 import com.messbook.messbook.Entities.Hostel;
 import com.messbook.messbook.Enums.CollegeErrors;
 import com.messbook.messbook.Services.CollegeService;
 import com.messbook.messbook.UtilsClasses.ResponseWithError;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,8 +31,15 @@ public class CollegeController {
     }
 
     /// checked
-    @GetMapping("api/college/hostel")
-    public ResponseWithError<Hostel, CollegeErrors> getHostelDetails(@RequestParam(value = "hostelName") String hostelName) {
-        return collegeService.getHostelDetails(hostelName);
+    @GetMapping("api/college/hostel/{name}")
+    public ResponseWithError<Hostel, CollegeErrors> getHostelDetails(@PathVariable String name) {
+        return collegeService.getHostelDetails(name);
     }
+
+    /// checked
+    @GetMapping("api/college/department/{name}")
+    public ResponseWithError<Department, CollegeErrors> getDepartmentDetails(@PathVariable String name) {
+        return collegeService.getDepartmentDetails(name);
+    }
+
 }

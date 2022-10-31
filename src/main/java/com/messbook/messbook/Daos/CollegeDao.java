@@ -1,5 +1,6 @@
 package com.messbook.messbook.Daos;
 
+import com.messbook.messbook.Entities.Department;
 import com.messbook.messbook.Entities.Extra_Item_Menu;
 import com.messbook.messbook.Entities.Hostel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,5 +47,18 @@ public class CollegeDao {
         }
 
         return hostel;
+    }
+
+    public Department getDepartmentDetails(String departmentName) {
+        String query = "SELECT * FROM Department WHERE name = ?";
+        Department department = null;
+
+        try {
+            department = jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Department.class), departmentName).get(0);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return department;
     }
 }
