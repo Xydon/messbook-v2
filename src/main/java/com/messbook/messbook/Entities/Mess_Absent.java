@@ -1,13 +1,13 @@
 package com.messbook.messbook.Entities;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Mess_Absent {
     private String student_roll_number;
     private String semester_id;
     private String mess_id;
-    private java.util.Date start_date;
-    private java.util.Date end_date;
+    private Date start_date;
+    private Date end_date;
 
     public Mess_Absent() {
     }

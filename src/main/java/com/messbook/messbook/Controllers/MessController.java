@@ -2,6 +2,7 @@ package com.messbook.messbook.Controllers;
 
 import com.messbook.messbook.Entities.Feedback;
 import com.messbook.messbook.Entities.Mess;
+import com.messbook.messbook.Entities.Mess_Absent;
 import com.messbook.messbook.Entities.Semester_Details;
 import com.messbook.messbook.Enums.Errors;
 import com.messbook.messbook.Enums.MessErrors;
@@ -179,5 +180,13 @@ public class MessController {
         }
 
         return messService.getExtraEntryForDate(student_roll_number, mess_id, semesterResponse.getResponse().getId(), date);
+    }
+
+    @PostMapping("api/mess/markAbsent")
+    public ResponseWithError<Boolean, MessErrors> markAbsent(
+            @RequestBody Mess_Absent messAbsent,
+            @RequestParam(value="firstDateOfMonth") Date firstDateOfMonth
+    ) {
+        return messService.markAbsent(firstDateOfMonth, messAbsent);
     }
 }

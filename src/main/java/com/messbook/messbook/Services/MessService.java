@@ -140,16 +140,14 @@ public class MessService {
     }
 
     public ResponseWithError<Boolean, MessErrors> markAbsent(
-            String student_roll_number,
-            String mess_id,
-            String semester_id,
             Date firstDateOfMonth,
             Mess_Absent mess_absent
     ) {
+
         ResponseWithError<List<MessPresent>, MessErrors> presentListResponse = this.getPresentList(
-                student_roll_number,
-                mess_id,
-                semester_id,
+                mess_absent.getStudent_roll_number(),
+                mess_absent.getMess_id(),
+                mess_absent.getSemester_id(),
                 firstDateOfMonth
         );
         ResponseWithError<Boolean, MessErrors> response = new ResponseWithError<>();
@@ -159,39 +157,36 @@ public class MessService {
             return response;
         }
 
-        int startDate = mess_absent.getStart_date().getDate();
-        int endDate = mess_absent.getEnd_date().getDate();
+        Date startDate = mess_absent.getStart_date();
+        Date endDate = mess_absent.getEnd_date();
         List<MessPresent> messPresentList = presentListResponse.getResponse();
-        int firstDateOfMonthValue = firstDateOfMonth.getDate();
-        int lastDateOfMonthValue = DateUtils.getLastDateOfMonth(firstDateOfMonth).getDate();
+        Date lastDateOfMonthValue = DateUtils.getLastDateOfMonth(firstDateOfMonth);
 
-        if(startDate > endDate) {
+        if(startDate.after(endDate)) {
             response.config(null, MessErrors.MESS_ABSENT_RANGE_OUT_OF_BOUNDS, "supplied date is not valid as start is greater than end");
             return response;
         }
 
+        // greater than today
+        java.util.Date today = new java.util.Date();
+        if(today.after(startDate)) {
+            response.config(null, MessErrors.MESS_ABSENT_CANNOT_BE_BEFORE, "supplied date cannot be before today");
+            return response;
+        }
+
         // belongs to the month
-        if (startDate < firstDateOfMonthValue || endDate > lastDateOfMonthValue) {
+        if (startDate.before(firstDateOfMonth) || endDate.after(lastDateOfMonthValue)) {
             response.config(null, MessErrors.MESS_ABSENT_RANGE_OUT_OF_BOUNDS,
                     "supplied date doesn't belongs to current month, consider supplying the date in the current month");
             return response;
         }
 
         // not intersecting
-        for (int i = startDate; i <= endDate; ++i) {
+        for (int i = startDate.getDate(); i <= endDate.getDate(); ++i) {
             if (messPresentList.get(i - 1).isHasAte()) {
                 response.config(null, MessErrors.INTERSECTING_MESS_ABSENT, "supplied date intersects with previous entry");
                 return response;
             }
-        }
-
-        // greater than today
-        java.util.Date today = new java.util.Date();
-        int todayDate = today.getDate();
-
-        if(todayDate>= startDate) {
-            response.config(null, MessErrors.MESS_ABSENT_CANNOT_BE_BEFORE, "supplied date cannot be before today");
-            return response;
         }
 
         response.config(Boolean.TRUE, MessErrors.SUCCESS, "successfully inserted");
